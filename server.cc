@@ -410,6 +410,7 @@ int poll_completion(struct resources *res) {
             rc = 1;
         }
     }
+    return rc;
 }
 
 int main(int argc, char *argv[]) {
