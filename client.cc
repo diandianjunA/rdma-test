@@ -2,6 +2,7 @@
 // Created by 熊嘉晟 on 2024/7/12.
 //
 
+#include <chrono>
 #include "client.h"
 
 void print_config(void) {
@@ -492,19 +493,18 @@ int main(int argc, char *argv[]) {
     }
     if (!strcmp(config.operation, "send")) {
         strcpy(res.buf, MSG);
-        struct timeval begin;
-        struct timeval end;
         if (post_send(&res, IBV_WR_SEND)) {
             fprintf(stderr, "failed to post SR\n");
             goto main_exit;
         }
-        gettimeofday(&begin, NULL);
+        auto start = std::chrono::high_resolution_clock::now();
         if (poll_completion(&res)) {
             fprintf(stderr, "poll completion failed\n");
             goto main_exit;
         }
-        gettimeofday(&end, NULL);
-        fprintf(stdout, "Duration: %ld us\n", (end.tv_sec - begin.tv_sec) * 1000000 + end.tv_usec - begin.tv_usec);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+        fprintf(stdout, "RDMA send operation took %lld ns\n", duration.count());
     } else if (!strcmp(config.operation, "receive")) {
         if (post_receive(&res)) {
             fprintf(stderr, "failed to post RR\n");
@@ -521,21 +521,20 @@ int main(int argc, char *argv[]) {
             rc = 1;
             goto main_exit;
         }
-        struct timeval begin;
-        struct timeval end;
         if (post_send(&res, IBV_WR_RDMA_READ)) {
             fprintf(stderr, "failed to post SR 2\n");
             rc = 1;
             goto main_exit;
         }
-        gettimeofday(&begin, NULL);
+        auto start = std::chrono::high_resolution_clock::now();
         if (poll_completion(&res)) {
             fprintf(stderr, "poll completion failed 2\n");
             rc = 1;
             goto main_exit;
         }
-        gettimeofday(&end, NULL);
-        fprintf(stdout, "Duration: %ld us\n", (end.tv_sec - begin.tv_sec) * 1000000 + end.tv_usec - begin.tv_usec);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+        fprintf(stdout, "RDMA read operation took %lld ns\n", duration.count());
         fprintf(stdout, "Contents of server's buffer: '%s'\n", res.buf);
         if (sock_sync_data(res.sock, 1, "R", &temp_char)) {
             fprintf(stderr, "sync error before RDMA ops\n");
@@ -548,21 +547,20 @@ int main(int argc, char *argv[]) {
             rc = 1;
             goto main_exit;
         }
-        struct timeval begin;
-        struct timeval end;
         if (post_send(&res, IBV_WR_RDMA_WRITE)) {
             fprintf(stderr, "failed to post SR 3\n");
             rc = 1;
             goto main_exit;
         }
-        gettimeofday(&begin, NULL);
+        auto start = std::chrono::high_resolution_clock::now();
         if (poll_completion(&res)) {
             fprintf(stderr, "poll completion failed 3\n");
             rc = 1;
             goto main_exit;
         }
-        gettimeofday(&end, NULL);
-        fprintf(stdout, "Duration: %ld us\n", (end.tv_sec - begin.tv_sec) * 1000000 + end.tv_usec - begin.tv_usec);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+        fprintf(stdout, "RDMA write operation took %lld ns\n", duration.count());
         if (sock_sync_data(res.sock, 1, "W", &temp_char)) {
             fprintf(stderr, "sync error after RDMA ops\n");
             rc = 1;

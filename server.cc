@@ -2,6 +2,7 @@
 // Created by 熊嘉晟 on 2024/7/12.
 //
 
+#include <chrono>
 #include "server.h"
 
 void print_config(void) {
@@ -472,19 +473,18 @@ int main(int argc, char *argv[]) {
     }
     if (strcmp(config.operation, "send") == 0) {
         strcpy(res.buf, MSG);
-        struct timeval begin;
-        struct timeval end;
         if (post_send(&res, IBV_WR_SEND)) {
             fprintf(stderr, "failed to post SR\n");
             goto main_exit;
         }
-        gettimeofday(&begin, NULL);
+        auto start = std::chrono::high_resolution_clock::now();
         if (poll_completion(&res)) {
             fprintf(stderr, "poll completion failed\n");
             goto main_exit;
         }
-        gettimeofday(&end, NULL);
-        fprintf(stdout, "Duration: %ld us\n", (end.tv_sec - begin.tv_sec) * 1000000 + end.tv_usec - begin.tv_usec);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
+        fprintf(stdout, "RDMA send operation took %lld ns\n", duration.count());
     } else if (strcmp(config.operation, "receive") == 0) {
         if (post_receive(&res)) {
             fprintf(stderr, "failed to post RR\n");
