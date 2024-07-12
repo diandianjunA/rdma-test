@@ -514,7 +514,7 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "poll completion failed\n");
             goto main_exit;
         }
-        fprintf(stdout, "Receive operation was completed successfully\n");
+        fprintf(stdout, "Contents of server's buffer: '%s'\n", res.buf);
     } else if (!strcmp(config.operation, "read")) {
         if (sock_sync_data(res.sock, 1, "R", &temp_char)) {
             fprintf(stderr, "sync error before RDMA ops\n");
