@@ -419,6 +419,7 @@ int poll_completion(struct resources *res) {
             fprintf(stderr, "got bad completion with status: 0x%x, vendor syndrome: 0x%x\n", wc.status, wc.vendor_err);
             rc = 1;
         }
+        printf("Contents of server's buffer: '%s'\n", res->buf);
     }
 }
 

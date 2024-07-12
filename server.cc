@@ -111,7 +111,7 @@ int resources_create(struct resources *res) {
         rc = 1;
         goto resources_create_exit;
     }
-    fprintf(stdout, "going to send the message: '%s'\n", res->buf);
+    memset(res->buf, 0, size);
     /* register the memory buffer */
     mr_flags = IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE;
     res->mr = ibv_reg_mr(res->pd, res->buf, size, mr_flags);
