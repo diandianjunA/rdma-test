@@ -1,3 +1,4 @@
-E:/rocksdb_list/rdma-test/cmake-build-debug/CMakeFiles/rdma_test.dir
+E:/rocksdb_list/rdma-test/cmake-build-debug/CMakeFiles/server.dir
+E:/rocksdb_list/rdma-test/cmake-build-debug/CMakeFiles/client.dir
 E:/rocksdb_list/rdma-test/cmake-build-debug/CMakeFiles/edit_cache.dir
 E:/rocksdb_list/rdma-test/cmake-build-debug/CMakeFiles/rebuild_cache.dir

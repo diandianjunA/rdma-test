@@ -41,55 +41,82 @@ include CMakeFiles/rules.ninja
 
 cmake_ninja_workdir = E$:/rocksdb_list/rdma-test/cmake-build-debug/
 # =============================================================================
-# Object build statements for EXECUTABLE target rdma_test
+# Object build statements for EXECUTABLE target server
 
 
 #############################################
-# Order-only phony target for rdma_test
+# Order-only phony target for server
 
-build cmake_object_order_depends_target_rdma_test: phony || CMakeFiles/rdma_test.dir
+build cmake_object_order_depends_target_server: phony || CMakeFiles/server.dir
 
-build CMakeFiles/rdma_test.dir/main.cc.obj: CXX_COMPILER__rdma_test_unscanned_Debug E$:/rocksdb_list/rdma-test/main.cc || cmake_object_order_depends_target_rdma_test
-  DEP_FILE = CMakeFiles\rdma_test.dir\main.cc.obj.d
+build CMakeFiles/server.dir/server.cc.obj: CXX_COMPILER__server_unscanned_Debug E$:/rocksdb_list/rdma-test/server.cc || cmake_object_order_depends_target_server
+  DEP_FILE = CMakeFiles\server.dir\server.cc.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  OBJECT_DIR = CMakeFiles\rdma_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\rdma_test.dir
+  OBJECT_DIR = CMakeFiles\server.dir
+  OBJECT_FILE_DIR = CMakeFiles\server.dir
 
-build CMakeFiles/rdma_test.dir/server.cc.obj: CXX_COMPILER__rdma_test_unscanned_Debug E$:/rocksdb_list/rdma-test/server.cc || cmake_object_order_depends_target_rdma_test
-  DEP_FILE = CMakeFiles\rdma_test.dir\server.cc.obj.d
+build CMakeFiles/server.dir/rdma_common.cc.obj: CXX_COMPILER__server_unscanned_Debug E$:/rocksdb_list/rdma-test/rdma_common.cc || cmake_object_order_depends_target_server
+  DEP_FILE = CMakeFiles\server.dir\rdma_common.cc.obj.d
   FLAGS = -g -fdiagnostics-color=always
-  OBJECT_DIR = CMakeFiles\rdma_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\rdma_test.dir
-
-build CMakeFiles/rdma_test.dir/rdma_common.cc.obj: CXX_COMPILER__rdma_test_unscanned_Debug E$:/rocksdb_list/rdma-test/rdma_common.cc || cmake_object_order_depends_target_rdma_test
-  DEP_FILE = CMakeFiles\rdma_test.dir\rdma_common.cc.obj.d
-  FLAGS = -g -fdiagnostics-color=always
-  OBJECT_DIR = CMakeFiles\rdma_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\rdma_test.dir
-
-build CMakeFiles/rdma_test.dir/client.cpp.obj: CXX_COMPILER__rdma_test_unscanned_Debug E$:/rocksdb_list/rdma-test/client.cpp || cmake_object_order_depends_target_rdma_test
-  DEP_FILE = CMakeFiles\rdma_test.dir\client.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
-  OBJECT_DIR = CMakeFiles\rdma_test.dir
-  OBJECT_FILE_DIR = CMakeFiles\rdma_test.dir
+  OBJECT_DIR = CMakeFiles\server.dir
+  OBJECT_FILE_DIR = CMakeFiles\server.dir
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target rdma_test
+# Link build statements for EXECUTABLE target server
 
 
 #############################################
-# Link the executable rdma_test.exe
+# Link the executable server.exe
 
-build rdma_test.exe: CXX_EXECUTABLE_LINKER__rdma_test_Debug CMakeFiles/rdma_test.dir/main.cc.obj CMakeFiles/rdma_test.dir/server.cc.obj CMakeFiles/rdma_test.dir/rdma_common.cc.obj CMakeFiles/rdma_test.dir/client.cpp.obj
+build server.exe: CXX_EXECUTABLE_LINKER__server_Debug CMakeFiles/server.dir/server.cc.obj CMakeFiles/server.dir/rdma_common.cc.obj
   FLAGS = -g
-  LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
-  OBJECT_DIR = CMakeFiles\rdma_test.dir
+  LINK_LIBRARIES = -libverbs  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+  OBJECT_DIR = CMakeFiles\server.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
-  TARGET_FILE = rdma_test.exe
-  TARGET_IMPLIB = librdma_test.dll.a
-  TARGET_PDB = rdma_test.exe.dbg
+  TARGET_FILE = server.exe
+  TARGET_IMPLIB = libserver.dll.a
+  TARGET_PDB = server.exe.dbg
+
+# =============================================================================
+# Object build statements for EXECUTABLE target client
+
+
+#############################################
+# Order-only phony target for client
+
+build cmake_object_order_depends_target_client: phony || CMakeFiles/client.dir
+
+build CMakeFiles/client.dir/client.cc.obj: CXX_COMPILER__client_unscanned_Debug E$:/rocksdb_list/rdma-test/client.cc || cmake_object_order_depends_target_client
+  DEP_FILE = CMakeFiles\client.dir\client.cc.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\client.dir
+  OBJECT_FILE_DIR = CMakeFiles\client.dir
+
+build CMakeFiles/client.dir/rdma_common.cc.obj: CXX_COMPILER__client_unscanned_Debug E$:/rocksdb_list/rdma-test/rdma_common.cc || cmake_object_order_depends_target_client
+  DEP_FILE = CMakeFiles\client.dir\rdma_common.cc.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\client.dir
+  OBJECT_FILE_DIR = CMakeFiles\client.dir
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target client
+
+
+#############################################
+# Link the executable client.exe
+
+build client.exe: CXX_EXECUTABLE_LINKER__client_Debug CMakeFiles/client.dir/client.cc.obj CMakeFiles/client.dir/rdma_common.cc.obj
+  FLAGS = -g
+  LINK_LIBRARIES = -libverbs  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+  OBJECT_DIR = CMakeFiles\client.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_FILE = client.exe
+  TARGET_IMPLIB = libclient.dll.a
+  TARGET_PDB = client.exe.dbg
 
 
 #############################################
@@ -117,7 +144,9 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build rdma_test: phony rdma_test.exe
+build client: phony client.exe
+
+build server: phony server.exe
 
 # =============================================================================
 # Folder targets.
@@ -127,7 +156,7 @@ build rdma_test: phony rdma_test.exe
 #############################################
 # Folder: E:/rocksdb_list/rdma-test/cmake-build-debug
 
-build all: phony rdma_test.exe
+build all: phony server.exe client.exe
 
 # =============================================================================
 # Built-in targets

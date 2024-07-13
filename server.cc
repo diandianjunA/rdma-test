@@ -389,11 +389,14 @@ int poll_completion(struct resources *res) {
     /* poll the completion for a while before giving up of doing it .. */
     gettimeofday(&cur_time, NULL);
     start_time_msec = (cur_time.tv_sec * 1000) + (cur_time.tv_usec / 1000);
+    int count = 0;
     do {
+        count++;
         poll_result = ibv_poll_cq(res->cq, 1, &wc);
         gettimeofday(&cur_time, NULL);
         cur_time_msec = (cur_time.tv_sec * 1000) + (cur_time.tv_usec / 1000);
     } while ((poll_result == 0) && ((cur_time_msec - start_time_msec) < MAX_POLL_CQ_TIMEOUT));
+    printf("poll count: %d\n", count);
     if (poll_result < 0) {
         /* poll CQ failed */
         fprintf(stderr, "poll CQ failed\n");
@@ -418,6 +421,7 @@ int main(int argc, char *argv[]) {
     struct resources res;
     int rc = 0;
     char temp_char;
+    int count = 0;
     while (true) {
         int c;
         static struct option long_options[] = {
@@ -426,9 +430,10 @@ int main(int argc, char *argv[]) {
                 {.name = "ib-port", .has_arg = 1, .val = 'i'},
                 {.name = "gid-idx", .has_arg = 1, .val = 'g'},
                 {.name = "op", .has_arg = 1, .val = 'o'},
+                {.name = "times", .has_arg = 1, .val = 't'},
                 {.name = NULL, .has_arg = 0, .val = '\0'}
         };
-        c = getopt_long(argc, argv, "p:d:i:g:o:", long_options, NULL);
+        c = getopt_long(argc, argv, "p:d:i:g:o:t:", long_options, NULL);
         if (c == -1) {
             break;
         }
@@ -456,6 +461,9 @@ int main(int argc, char *argv[]) {
             case 'o':
                 config.operation = strdup(optarg);
                 break;
+            case 't':
+                count = strtol(optarg, NULL, 0);
+                break;
             default:
                 fprintf(stderr, "Invalid command line argument\n");
                 return 1;
@@ -473,26 +481,32 @@ int main(int argc, char *argv[]) {
     }
     if (strcmp(config.operation, "send") == 0) {
         strcpy(res.buf, MSG);
-        if (post_send(&res, IBV_WR_SEND)) {
-            fprintf(stderr, "failed to post SR\n");
-            goto main_exit;
+        std::chrono::nanoseconds total(0);
+        for (int i = 0; i < count; ++i) {
+            if (post_send(&res, IBV_WR_SEND)) {
+                fprintf(stderr, "failed to post SR\n");
+                goto main_exit;
+            }
+            auto start = std::chrono::high_resolution_clock::now();
+            if (poll_completion(&res)) {
+                fprintf(stderr, "poll completion failed\n");
+                goto main_exit;
+            }
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::nanoseconds elapsed = end - start;
+            total += elapsed;
         }
-        auto start = std::chrono::high_resolution_clock::now();
-        if (poll_completion(&res)) {
-            fprintf(stderr, "poll completion failed\n");
-            goto main_exit;
-        }
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
-        fprintf(stdout, "RDMA send operation took %lld ns\n", duration.count());
+        fprintf(stdout, "RDMA send operation took %lld ns\n", total.count());
     } else if (strcmp(config.operation, "receive") == 0) {
-        if (post_receive(&res)) {
-            fprintf(stderr, "failed to post RR\n");
-            goto main_exit;
-        }
-        if (poll_completion(&res)) {
-            fprintf(stderr, "poll completion failed\n");
-            goto main_exit;
+        for (int i = 0; i < count; ++i) {
+            if (post_receive(&res)) {
+                fprintf(stderr, "failed to post RR\n");
+                goto main_exit;
+            }
+            if (poll_completion(&res)) {
+                fprintf(stderr, "poll completion failed\n");
+                goto main_exit;
+            }
         }
         fprintf(stdout, "Message is: %s\n", res.buf);
     } else if (!strcmp(config.operation, "read")) {
